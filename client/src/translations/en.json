@@ -1,0 +1,104 @@
+{
+  "nav": {
+    "home": "Home",
+    "about": "About",
+    "contact": "Contact",
+    "admin": "Admin"
+  },
+  "home": {
+    "hero_title": "Find the Perfect Vendor for Your Special Event",
+    "hero_subtitle": "Discover trusted event vendors across Tamil Nadu — catering, decoration, photography, and more.",
+    "select_district": "Select Your District",
+    "select_district_hint": "Choose a district to explore vendors near you",
+    "popular_categories": "Popular Categories",
+    "featured_vendors": "Featured Vendors",
+    "why_choose": "Why Choose Us?",
+    "trusted": "Trusted Vendors",
+    "trusted_desc": "All vendors are verified and reviewed by real customers.",
+    "easy_contact": "Easy Contact",
+    "easy_contact_desc": "Call or WhatsApp vendors directly with one tap.",
+    "multilingual": "Multilingual",
+    "multilingual_desc": "Browse in Tamil or English, your choice."
+  },
+  "vendor": {
+    "call": "Call Now",
+    "whatsapp": "WhatsApp",
+    "view_details": "View Details",
+    "price_range": "Price Range",
+    "rating": "Rating",
+    "district": "District",
+    "category": "Category",
+    "description": "Description",
+    "services": "Services Offered",
+    "owner": "Owner",
+    "experience": "Years of Experience",
+    "languages": "Languages Spoken",
+    "gallery": "Photo Gallery",
+    "no_vendors": "No vendors found in this area.",
+    "loading": "Loading vendors..."
+  },
+  "district": {
+    "title": "Vendors in",
+    "select_category": "Select a Category"
+  },
+  "category": {
+    "vendors_in": "Vendors in",
+    "filter": "Filter",
+    "sort_by": "Sort by",
+    "rating": "Rating",
+    "price": "Price"
+  },
+  "admin": {
+    "login": "Admin Login",
+    "username": "Username",
+    "password": "Password",
+    "sign_in": "Sign In",
+    "dashboard": "Dashboard",
+    "total_vendors": "Total Vendors",
+    "total_categories": "Total Categories",
+    "total_districts": "Total Districts",
+    "manage_vendors": "Manage Vendors",
+    "manage_categories": "Manage Categories",
+    "manage_districts": "Manage Districts",
+    "add_vendor": "Add Vendor",
+    "edit_vendor": "Edit Vendor",
+    "delete_vendor": "Delete Vendor",
+    "shop_name": "Shop Name",
+    "phone": "Phone Number",
+    "whatsapp": "WhatsApp Number",
+    "featured": "Featured",
+    "save": "Save",
+    "cancel": "Cancel",
+    "confirm_delete": "Are you sure you want to delete this vendor?",
+    "logout": "Logout",
+    "actions": "Actions"
+  },
+  "about": {
+    "title": "About Us",
+    "subtitle": "Connecting Tamil Nadu's best event vendors with families planning their special moments.",
+    "mission": "Our Mission",
+    "mission_text": "We bridge the gap between event vendors and families across Tamil Nadu, making it easy to find trusted, affordable, and quality event services for every occasion."
+  },
+  "contact": {
+    "title": "Contact Us",
+    "name": "Your Name",
+    "email": "Email Address",
+    "message": "Message",
+    "send": "Send Message",
+    "address": "Address",
+    "phone": "Phone"
+  },
+  "footer": {
+    "tagline": "Your trusted event vendor marketplace in Tamil Nadu.",
+    "quick_links": "Quick Links",
+    "districts": "Popular Districts",
+    "rights": "All rights reserved."
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "Something went wrong. Please try again.",
+    "no_results": "No results found.",
+    "back": "Go Back",
+    "search": "Search"
+  }
+}
