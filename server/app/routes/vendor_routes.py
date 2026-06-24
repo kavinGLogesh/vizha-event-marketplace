@@ -1,9 +1,8 @@
 # vendor_routes.py — Vendor CRUD endpoints (public read, admin write)
-from fastapi import APIRouter, HTTPException, status, Depends, Query, UploadFile, File
+from fastapi import APIRouter, HTTPException, status, Depends, Query
 from bson import ObjectId
 from typing import Optional
 from app.config.db import get_db
-from app.config.cloudinary import upload_image_to_cloudinary
 from app.models.vendor import VendorCreate, VendorUpdate
 from app.schemas.vendor_schema import vendor_serializer, vendors_serializer
 from app.middleware.auth_middleware import get_current_admin
@@ -141,24 +140,3 @@ async def delete_vendor(
     )
 
     return {"message": "Vendor deleted successfully.", "id": vendor_id}
-
-
-# ─── Image Upload Endpoint ───────────────────────────────────
-
-@router.post("/upload-image")
-async def upload_vendor_image(
-    file: UploadFile = File(...),
-    admin=Depends(get_current_admin)
-):
-    """Upload a vendor image to Cloudinary. Returns the hosted URL."""
-    allowed_types = ["image/jpeg", "image/png", "image/webp", "image/jpg"]
-    if file.content_type not in allowed_types:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Invalid file type: {file.content_type}. Only JPEG, PNG, and WebP are allowed."
-        )
-
-    contents = await file.read()
-    result = upload_image_to_cloudinary(contents)
-
-    return {"url": result["url"], "public_id": result["public_id"]}

@@ -1,30 +1,59 @@
 // EditVendor.jsx — Admin form to edit an existing vendor
-import React, { useEffect, useState } from 'react';
-import { useNavigate, useParams, Link } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
+import React, { useEffect, useState } from "react";
+import { useNavigate, useParams, Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import {
-  Box, Container, Typography, Paper, Grid, TextField, Button,
-  FormControl, InputLabel, Select, MenuItem, FormControlLabel,
-  Switch, Chip, Alert, CircularProgress, AppBar, Toolbar,
-  IconButton, LinearProgress
-} from '@mui/material';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import CloudUploadIcon from '@mui/icons-material/CloudUpload';
-import AddIcon from '@mui/icons-material/Add';
-import DeleteIcon from '@mui/icons-material/Delete';
-import EventNoteIcon from '@mui/icons-material/EventNote';
-import LogoutIcon from '@mui/icons-material/Logout';
-import { getVendorById, getCategories, getDistricts, updateVendor, uploadImage } from '../../api/axios';
+  Box,
+  Container,
+  Typography,
+  Paper,
+  Grid,
+  TextField,
+  Button,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  FormControlLabel,
+  Switch,
+  Chip,
+  Alert,
+  CircularProgress,
+  AppBar,
+  Toolbar,
+  IconButton,
+  LinearProgress,
+} from "@mui/material";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+import AddIcon from "@mui/icons-material/Add";
+import DeleteIcon from "@mui/icons-material/Delete";
+import EventNoteIcon from "@mui/icons-material/EventNote";
+import LogoutIcon from "@mui/icons-material/Logout";
+import {
+  getVendorById,
+  getCategories,
+  getDistricts,
+  updateVendor,
+  uploadImage,
+} from "../../api/axios";
 
-const LANGUAGES = ['Tamil', 'English', 'Telugu', 'Malayalam', 'Kannada', 'Hindi'];
+const LANGUAGES = [
+  "Tamil",
+  "English",
+  "Telugu",
+  "Malayalam",
+  "Kannada",
+  "Hindi",
+];
 
 const inputSx = {
-  '& .MuiOutlinedInput-root': {
+  "& .MuiOutlinedInput-root": {
     fontFamily: '"Lato", sans-serif',
     borderRadius: 2,
-    '&.Mui-focused fieldset': { borderColor: '#7a1c2e' }
+    "&.Mui-focused fieldset": { borderColor: "#7a1c2e" },
   },
-  '& .MuiInputLabel-root.Mui-focused': { color: '#7a1c2e' }
+  "& .MuiInputLabel-root.Mui-focused": { color: "#7a1c2e" },
 };
 
 const EditVendor = () => {
@@ -36,51 +65,57 @@ const EditVendor = () => {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
-  const [error, setError] = useState('');
-  const [serviceInput, setServiceInput] = useState('');
+  const [error, setError] = useState("");
+  const [serviceInput, setServiceInput] = useState("");
 
   const [form, setForm] = useState({
-    shop_name: '',
-    category: '',
-    district: '',
-    phone: '',
-    whatsapp: '',
-    description: '',
-    price_range: '',
-    rating: '',
-    owner_name: '',
-    experience: '',
+    shop_name: "",
+    category: "",
+    district: "",
+    phone: "",
+    whatsapp: "",
+    email: "",
+    description: "",
+    price_range: "",
+    rating: "",
+    owner_name: "",
+    experience: "",
     languages: [],
     services: [],
     images: [],
-    featured: false
+    featured: false,
   });
 
   useEffect(() => {
     const fetch = async () => {
       try {
-        const [vendor, c, d] = await Promise.all([getVendorById(id), getCategories(), getDistricts()]);
+        const [vendor, c, d] = await Promise.all([
+          getVendorById(id),
+          getCategories(),
+          getDistricts(),
+        ]);
         const v = vendor.data;
         setForm({
-          shop_name: v.shop_name || '',
-          category: v.category || '',
-          district: v.district || '',
-          phone: v.phone || '',
-          whatsapp: v.whatsapp || '',
-          description: v.description || '',
-          price_range: v.price_range || '',
-          rating: v.rating?.toString() || '',
-          owner_name: v.owner_name || '',
-          experience: v.experience?.toString() || '',
+          shop_name: v.shop_name || "",
+          category: v.category || "",
+          district: v.district || "",
+          phone: v.phone || "",
+          whatsapp: v.whatsapp || "",
+          email: v.email || "",
+          description: v.description || "",
+          price_range: v.price_range || "",
+          rating: v.rating?.toString() || "",
+          owner_name: v.owner_name || "",
+          experience: v.experience?.toString() || "",
           languages: v.languages || [],
           services: v.services || [],
           images: v.images || [],
-          featured: v.featured || false
+          featured: v.featured || false,
         });
         setCategories(c.data);
         setDistricts(d.data);
       } catch {
-        setError(t('common.error'));
+        setError(t("common.error"));
       } finally {
         setLoading(false);
       }
@@ -90,31 +125,40 @@ const EditVendor = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setForm(prev => ({ ...prev, [name]: value }));
+    setForm((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleLanguageToggle = (lang) => {
-    setForm(prev => ({
+    setForm((prev) => ({
       ...prev,
       languages: prev.languages.includes(lang)
-        ? prev.languages.filter(l => l !== lang)
-        : [...prev.languages, lang]
+        ? prev.languages.filter((l) => l !== lang)
+        : [...prev.languages, lang],
     }));
   };
 
   const handleAddService = () => {
     if (serviceInput.trim()) {
-      setForm(prev => ({ ...prev, services: [...prev.services, serviceInput.trim()] }));
-      setServiceInput('');
+      setForm((prev) => ({
+        ...prev,
+        services: [...prev.services, serviceInput.trim()],
+      }));
+      setServiceInput("");
     }
   };
 
   const handleRemoveService = (s) => {
-    setForm(prev => ({ ...prev, services: prev.services.filter(x => x !== s) }));
+    setForm((prev) => ({
+      ...prev,
+      services: prev.services.filter((x) => x !== s),
+    }));
   };
 
   const handleRemoveImage = (url) => {
-    setForm(prev => ({ ...prev, images: prev.images.filter(i => i !== url) }));
+    setForm((prev) => ({
+      ...prev,
+      images: prev.images.filter((i) => i !== url),
+    }));
   };
 
   const handleImageUpload = async (e) => {
@@ -125,13 +169,13 @@ const EditVendor = () => {
       const urls = [];
       for (const file of files) {
         const fd = new FormData();
-        fd.append('file', file);
+        fd.append("file", file);
         const res = await uploadImage(fd);
         urls.push(res.data.url);
       }
-      setForm(prev => ({ ...prev, images: [...prev.images, ...urls] }));
+      setForm((prev) => ({ ...prev, images: [...prev.images, ...urls] }));
     } catch {
-      setError('Image upload failed.');
+      setError("Image upload failed.");
     } finally {
       setUploading(false);
     }
@@ -139,49 +183,80 @@ const EditVendor = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
+    setError("");
     setSaving(true);
     try {
       const payload = {
         ...form,
         rating: form.rating ? parseFloat(form.rating) : 0,
-        experience: form.experience ? parseInt(form.experience) : 0
+        experience: form.experience ? parseInt(form.experience) : 0,
       };
       await updateVendor(id, payload);
-      navigate('/admin/vendors');
+      navigate("/admin/vendors");
     } catch (err) {
-      setError(err.response?.data?.detail || 'Failed to update vendor.');
+      setError(err.response?.data?.detail || "Failed to update vendor.");
     } finally {
       setSaving(false);
     }
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('admin_token');
-    navigate('/admin/login');
+    localStorage.removeItem("admin_token");
+    navigate("/admin/login");
   };
 
   if (loading) {
     return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh' }}>
-        <CircularProgress sx={{ color: '#7a1c2e' }} />
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          minHeight: "100vh",
+        }}
+      >
+        <CircularProgress sx={{ color: "#7a1c2e" }} />
       </Box>
     );
   }
 
   return (
-    <Box sx={{ minHeight: '100vh', backgroundColor: '#f8f4f5' }}>
-      <AppBar position="sticky" elevation={0} sx={{ backgroundColor: '#1a0a0e', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
+    <Box sx={{ minHeight: "100vh", backgroundColor: "#f8f4f5" }}>
+      <AppBar
+        position="sticky"
+        elevation={0}
+        sx={{
+          backgroundColor: "#1a0a0e",
+          borderBottom: "1px solid rgba(255,255,255,0.08)",
+        }}
+      >
         <Container maxWidth="xl">
           <Toolbar disableGutters>
-            <EventNoteIcon sx={{ color: '#c4576a', mr: 1 }} />
-            <Typography sx={{ fontFamily: '"Cormorant Garamond", serif', fontSize: '1.3rem', fontWeight: 700, color: '#fff', flexGrow: 1 }}>
+            <EventNoteIcon sx={{ color: "#c4576a", mr: 1 }} />
+            <Typography
+              sx={{
+                fontFamily: '"Cormorant Garamond", serif',
+                fontSize: "1.3rem",
+                fontWeight: 700,
+                color: "#fff",
+                flexGrow: 1,
+              }}
+            >
               Vizha Admin
             </Typography>
-            <Button component={Link} to="/admin/dashboard" sx={{ color: 'rgba(255,255,255,0.6)', fontFamily: '"Lato", sans-serif', textTransform: 'none', mr: 1 }}>
+            <Button
+              component={Link}
+              to="/admin/dashboard"
+              sx={{
+                color: "rgba(255,255,255,0.6)",
+                fontFamily: '"Lato", sans-serif',
+                textTransform: "none",
+                mr: 1,
+              }}
+            >
               Dashboard
             </Button>
-            <IconButton onClick={handleLogout} sx={{ color: '#c4576a' }}>
+            <IconButton onClick={handleLogout} sx={{ color: "#c4576a" }}>
               <LogoutIcon />
             </IconButton>
           </Toolbar>
@@ -189,87 +264,244 @@ const EditVendor = () => {
       </AppBar>
 
       <Container maxWidth="lg" sx={{ py: 5 }}>
-        <Button startIcon={<ArrowBackIcon />} onClick={() => navigate('/admin/vendors')} sx={{ color: '#888', fontFamily: '"Lato", sans-serif', textTransform: 'none', mb: 2, pl: 0 }}>
+        <Button
+          startIcon={<ArrowBackIcon />}
+          onClick={() => navigate("/admin/vendors")}
+          sx={{
+            color: "#888",
+            fontFamily: '"Lato", sans-serif',
+            textTransform: "none",
+            mb: 2,
+            pl: 0,
+          }}
+        >
           Back to Vendors
         </Button>
 
-        <Typography sx={{ fontFamily: '"Cormorant Garamond", serif', fontSize: '2rem', fontWeight: 700, mb: 4 }}>
-          {t('admin.edit_vendor')}
+        <Typography
+          sx={{
+            fontFamily: '"Cormorant Garamond", serif',
+            fontSize: "2rem",
+            fontWeight: 700,
+            mb: 4,
+          }}
+        >
+          {t("admin.edit_vendor")}
         </Typography>
 
-        {error && <Alert severity="error" sx={{ mb: 3 }}>{error}</Alert>}
+        {error && (
+          <Alert severity="error" sx={{ mb: 3 }}>
+            {error}
+          </Alert>
+        )}
 
-        <Paper elevation={0} sx={{ border: '1px solid rgba(0,0,0,0.08)', borderRadius: 3, p: { xs: 3, md: 5 } }}>
+        <Paper
+          elevation={0}
+          sx={{
+            border: "1px solid rgba(0,0,0,0.08)",
+            borderRadius: 3,
+            p: { xs: 3, md: 5 },
+          }}
+        >
           <Box component="form" onSubmit={handleSubmit}>
             <Grid container spacing={3}>
               <Grid item xs={12}>
-                <Typography sx={{ fontFamily: '"Cormorant Garamond", serif', fontSize: '1.2rem', fontWeight: 700, mb: 1, color: '#7a1c2e' }}>
+                <Typography
+                  sx={{
+                    fontFamily: '"Cormorant Garamond", serif',
+                    fontSize: "1.2rem",
+                    fontWeight: 700,
+                    mb: 1,
+                    color: "#7a1c2e",
+                  }}
+                >
                   Basic Information
                 </Typography>
               </Grid>
 
               <Grid item xs={12} sm={6}>
-                <TextField fullWidth required label={t('admin.shop_name')} name="shop_name" value={form.shop_name} onChange={handleChange} sx={inputSx} />
+                <TextField
+                  fullWidth
+                  required
+                  label={t("admin.shop_name")}
+                  name="shop_name"
+                  value={form.shop_name}
+                  onChange={handleChange}
+                  sx={inputSx}
+                />
               </Grid>
               <Grid item xs={12} sm={6}>
-                <TextField fullWidth label="Owner Name" name="owner_name" value={form.owner_name} onChange={handleChange} sx={inputSx} />
+                <TextField
+                  fullWidth
+                  label="Owner Name"
+                  name="owner_name"
+                  value={form.owner_name}
+                  onChange={handleChange}
+                  sx={inputSx}
+                />
               </Grid>
 
               <Grid item xs={12} sm={6}>
                 <FormControl fullWidth required sx={inputSx}>
-                  <InputLabel sx={{ fontFamily: '"Lato", sans-serif' }}>{t('vendor.category')}</InputLabel>
-                  <Select name="category" value={form.category} label={t('vendor.category')} onChange={handleChange} sx={{ fontFamily: '"Lato", sans-serif', borderRadius: 2 }}>
-                    {categories.map(c => <MenuItem key={c._id} value={c.name}>{c.name}</MenuItem>)}
+                  <InputLabel sx={{ fontFamily: '"Lato", sans-serif' }}>
+                    {t("vendor.category")}
+                  </InputLabel>
+                  <Select
+                    name="category"
+                    value={form.category}
+                    label={t("vendor.category")}
+                    onChange={handleChange}
+                    sx={{ fontFamily: '"Lato", sans-serif', borderRadius: 2 }}
+                  >
+                    {categories.map((c) => (
+                      <MenuItem key={c._id} value={c.name}>
+                        {c.name}
+                      </MenuItem>
+                    ))}
                   </Select>
                 </FormControl>
               </Grid>
 
               <Grid item xs={12} sm={6}>
                 <FormControl fullWidth required sx={inputSx}>
-                  <InputLabel sx={{ fontFamily: '"Lato", sans-serif' }}>{t('vendor.district')}</InputLabel>
-                  <Select name="district" value={form.district} label={t('vendor.district')} onChange={handleChange} sx={{ fontFamily: '"Lato", sans-serif', borderRadius: 2 }}>
-                    {districts.map(d => <MenuItem key={d._id} value={d.name}>{d.name}</MenuItem>)}
+                  <InputLabel sx={{ fontFamily: '"Lato", sans-serif' }}>
+                    {t("vendor.district")}
+                  </InputLabel>
+                  <Select
+                    name="district"
+                    value={form.district}
+                    label={t("vendor.district")}
+                    onChange={handleChange}
+                    sx={{ fontFamily: '"Lato", sans-serif', borderRadius: 2 }}
+                  >
+                    {districts.map((d) => (
+                      <MenuItem key={d._id} value={d.name}>
+                        {d.name}
+                      </MenuItem>
+                    ))}
                   </Select>
                 </FormControl>
               </Grid>
 
               <Grid item xs={12}>
-                <TextField fullWidth multiline rows={3} label={t('vendor.description')} name="description" value={form.description} onChange={handleChange} sx={inputSx} />
+                <TextField
+                  fullWidth
+                  multiline
+                  rows={3}
+                  label={t("vendor.description")}
+                  name="description"
+                  value={form.description}
+                  onChange={handleChange}
+                  sx={inputSx}
+                />
               </Grid>
 
               <Grid item xs={12}>
-                <Typography sx={{ fontFamily: '"Cormorant Garamond", serif', fontSize: '1.2rem', fontWeight: 700, mb: 1, color: '#7a1c2e' }}>
+                <Typography
+                  sx={{
+                    fontFamily: '"Cormorant Garamond", serif',
+                    fontSize: "1.2rem",
+                    fontWeight: 700,
+                    mb: 1,
+                    color: "#7a1c2e",
+                  }}
+                >
                   Contact Details
                 </Typography>
               </Grid>
               <Grid item xs={12} sm={6}>
-                <TextField fullWidth required label={t('admin.phone')} name="phone" value={form.phone} onChange={handleChange} sx={inputSx} />
+                <TextField
+                  fullWidth
+                  required
+                  label={t("admin.phone")}
+                  name="phone"
+                  value={form.phone}
+                  onChange={handleChange}
+                  sx={inputSx}
+                />
               </Grid>
               <Grid item xs={12} sm={6}>
-                <TextField fullWidth label={t('admin.whatsapp')} name="whatsapp" value={form.whatsapp} onChange={handleChange} sx={inputSx} />
+                <TextField
+                  fullWidth
+                  label={t("admin.whatsapp")}
+                  name="whatsapp"
+                  value={form.whatsapp}
+                  onChange={handleChange}
+                  sx={inputSx}
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  label={t("contact.email")}
+                  name="email"
+                  type="email"
+                  value={form.email}
+                  onChange={handleChange}
+                  sx={inputSx}
+                />
               </Grid>
 
               <Grid item xs={12}>
-                <Typography sx={{ fontFamily: '"Cormorant Garamond", serif', fontSize: '1.2rem', fontWeight: 700, mb: 1, color: '#7a1c2e' }}>
+                <Typography
+                  sx={{
+                    fontFamily: '"Cormorant Garamond", serif',
+                    fontSize: "1.2rem",
+                    fontWeight: 700,
+                    mb: 1,
+                    color: "#7a1c2e",
+                  }}
+                >
                   Pricing & Experience
                 </Typography>
               </Grid>
               <Grid item xs={12} sm={4}>
-                <TextField fullWidth label={t('vendor.price_range')} name="price_range" value={form.price_range} onChange={handleChange} sx={inputSx} />
+                <TextField
+                  fullWidth
+                  label={t("vendor.price_range")}
+                  name="price_range"
+                  value={form.price_range}
+                  onChange={handleChange}
+                  sx={inputSx}
+                />
               </Grid>
               <Grid item xs={12} sm={4}>
-                <TextField fullWidth label={t('vendor.rating')} name="rating" type="number" value={form.rating} onChange={handleChange} sx={inputSx} inputProps={{ min: 0, max: 5, step: 0.1 }} />
+                <TextField
+                  fullWidth
+                  label={t("vendor.rating")}
+                  name="rating"
+                  type="number"
+                  value={form.rating}
+                  onChange={handleChange}
+                  sx={inputSx}
+                  inputProps={{ min: 0, max: 5, step: 0.1 }}
+                />
               </Grid>
               <Grid item xs={12} sm={4}>
-                <TextField fullWidth label={t('vendor.experience')} name="experience" type="number" value={form.experience} onChange={handleChange} sx={inputSx} />
+                <TextField
+                  fullWidth
+                  label={t("vendor.experience")}
+                  name="experience"
+                  type="number"
+                  value={form.experience}
+                  onChange={handleChange}
+                  sx={inputSx}
+                />
               </Grid>
 
               <Grid item xs={12}>
-                <Typography sx={{ fontFamily: '"Lato", sans-serif', fontSize: '0.85rem', color: '#555', mb: 1 }}>
-                  {t('vendor.languages')}
+                <Typography
+                  sx={{
+                    fontFamily: '"Lato", sans-serif',
+                    fontSize: "0.85rem",
+                    color: "#555",
+                    mb: 1,
+                  }}
+                >
+                  {t("vendor.languages")}
                 </Typography>
-                <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
-                  {LANGUAGES.map(lang => (
+                <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
+                  {LANGUAGES.map((lang) => (
                     <Chip
                       key={lang}
                       label={lang}
@@ -277,9 +509,15 @@ const EditVendor = () => {
                       onClick={() => handleLanguageToggle(lang)}
                       sx={{
                         fontFamily: '"Lato", sans-serif',
-                        backgroundColor: form.languages.includes(lang) ? '#7a1c2e' : 'rgba(0,0,0,0.06)',
-                        color: form.languages.includes(lang) ? '#fff' : '#555',
-                        '&:hover': { backgroundColor: form.languages.includes(lang) ? '#6a1826' : 'rgba(0,0,0,0.1)' }
+                        backgroundColor: form.languages.includes(lang)
+                          ? "#7a1c2e"
+                          : "rgba(0,0,0,0.06)",
+                        color: form.languages.includes(lang) ? "#fff" : "#555",
+                        "&:hover": {
+                          backgroundColor: form.languages.includes(lang)
+                            ? "#6a1826"
+                            : "rgba(0,0,0,0.1)",
+                        },
                       }}
                     />
                   ))}
@@ -287,41 +525,134 @@ const EditVendor = () => {
               </Grid>
 
               <Grid item xs={12}>
-                <Typography sx={{ fontFamily: '"Lato", sans-serif', fontSize: '0.85rem', color: '#555', mb: 1 }}>
-                  {t('vendor.services')}
+                <Typography
+                  sx={{
+                    fontFamily: '"Lato", sans-serif',
+                    fontSize: "0.85rem",
+                    color: "#555",
+                    mb: 1,
+                  }}
+                >
+                  {t("vendor.services")}
                 </Typography>
-                <Box sx={{ display: 'flex', gap: 1, mb: 1 }}>
-                  <TextField size="small" placeholder="Add a service..." value={serviceInput} onChange={(e) => setServiceInput(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddService())} sx={{ ...inputSx, flexGrow: 1 }} />
-                  <Button onClick={handleAddService} variant="outlined" sx={{ borderColor: '#7a1c2e', color: '#7a1c2e', borderRadius: 2, minWidth: 0, px: 2 }}>
+                <Box sx={{ display: "flex", gap: 1, mb: 1 }}>
+                  <TextField
+                    size="small"
+                    placeholder="Add a service..."
+                    value={serviceInput}
+                    onChange={(e) => setServiceInput(e.target.value)}
+                    onKeyDown={(e) =>
+                      e.key === "Enter" &&
+                      (e.preventDefault(), handleAddService())
+                    }
+                    sx={{ ...inputSx, flexGrow: 1 }}
+                  />
+                  <Button
+                    onClick={handleAddService}
+                    variant="outlined"
+                    sx={{
+                      borderColor: "#7a1c2e",
+                      color: "#7a1c2e",
+                      borderRadius: 2,
+                      minWidth: 0,
+                      px: 2,
+                    }}
+                  >
                     <AddIcon />
                   </Button>
                 </Box>
-                <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
-                  {form.services.map(s => (
-                    <Chip key={s} label={s} onDelete={() => handleRemoveService(s)} sx={{ fontFamily: '"Lato", sans-serif', backgroundColor: '#faf0f1', color: '#7a1c2e' }} />
+                <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
+                  {form.services.map((s) => (
+                    <Chip
+                      key={s}
+                      label={s}
+                      onDelete={() => handleRemoveService(s)}
+                      sx={{
+                        fontFamily: '"Lato", sans-serif',
+                        backgroundColor: "#faf0f1",
+                        color: "#7a1c2e",
+                      }}
+                    />
                   ))}
                 </Box>
               </Grid>
 
               {/* Images */}
               <Grid item xs={12}>
-                <Typography sx={{ fontFamily: '"Cormorant Garamond", serif', fontSize: '1.2rem', fontWeight: 700, mb: 1, color: '#7a1c2e' }}>
-                  {t('vendor.gallery')}
+                <Typography
+                  sx={{
+                    fontFamily: '"Cormorant Garamond", serif',
+                    fontSize: "1.2rem",
+                    fontWeight: 700,
+                    mb: 1,
+                    color: "#7a1c2e",
+                  }}
+                >
+                  {t("vendor.gallery")}
                 </Typography>
-                <Button component="label" variant="outlined" startIcon={<CloudUploadIcon />} disabled={uploading} sx={{ borderColor: '#7a1c2e', color: '#7a1c2e', fontFamily: '"Lato", sans-serif', textTransform: 'none', borderRadius: 2 }}>
+                <Button
+                  component="label"
+                  variant="outlined"
+                  startIcon={<CloudUploadIcon />}
+                  disabled={uploading}
+                  sx={{
+                    borderColor: "#7a1c2e",
+                    color: "#7a1c2e",
+                    fontFamily: '"Lato", sans-serif',
+                    textTransform: "none",
+                    borderRadius: 2,
+                  }}
+                >
                   Upload More Images
-                  <input type="file" hidden multiple accept="image/*" onChange={handleImageUpload} />
+                  <input
+                    type="file"
+                    hidden
+                    multiple
+                    accept="image/*"
+                    onChange={handleImageUpload}
+                  />
                 </Button>
-                {uploading && <LinearProgress sx={{ mt: 1, '& .MuiLinearProgress-bar': { backgroundColor: '#7a1c2e' } }} />}
+                {uploading && (
+                  <LinearProgress
+                    sx={{
+                      mt: 1,
+                      "& .MuiLinearProgress-bar": {
+                        backgroundColor: "#7a1c2e",
+                      },
+                    }}
+                  />
+                )}
                 {form.images.length > 0 && (
-                  <Box sx={{ display: 'flex', gap: 1.5, flexWrap: 'wrap', mt: 2 }}>
+                  <Box
+                    sx={{ display: "flex", gap: 1.5, flexWrap: "wrap", mt: 2 }}
+                  >
                     {form.images.map((url, i) => (
-                      <Box key={i} sx={{ position: 'relative' }}>
-                        <Box component="img" src={url} sx={{ width: 80, height: 60, objectFit: 'cover', borderRadius: 1.5, border: '1px solid rgba(0,0,0,0.1)', display: 'block' }} />
+                      <Box key={i} sx={{ position: "relative" }}>
+                        <Box
+                          component="img"
+                          src={url}
+                          sx={{
+                            width: 80,
+                            height: 60,
+                            objectFit: "cover",
+                            borderRadius: 1.5,
+                            border: "1px solid rgba(0,0,0,0.1)",
+                            display: "block",
+                          }}
+                        />
                         <IconButton
                           size="small"
                           onClick={() => handleRemoveImage(url)}
-                          sx={{ position: 'absolute', top: -8, right: -8, backgroundColor: '#dc2626', color: '#fff', width: 20, height: 20, '&:hover': { backgroundColor: '#b91c1c' } }}
+                          sx={{
+                            position: "absolute",
+                            top: -8,
+                            right: -8,
+                            backgroundColor: "#dc2626",
+                            color: "#fff",
+                            width: 20,
+                            height: 20,
+                            "&:hover": { backgroundColor: "#b91c1c" },
+                          }}
                         >
                           <DeleteIcon sx={{ fontSize: 12 }} />
                         </IconButton>
@@ -336,26 +667,62 @@ const EditVendor = () => {
                   control={
                     <Switch
                       checked={form.featured}
-                      onChange={(e) => setForm(prev => ({ ...prev, featured: e.target.checked }))}
-                      sx={{ '& .MuiSwitch-switchBase.Mui-checked': { color: '#7a1c2e' }, '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': { backgroundColor: '#7a1c2e' } }}
+                      onChange={(e) =>
+                        setForm((prev) => ({
+                          ...prev,
+                          featured: e.target.checked,
+                        }))
+                      }
+                      sx={{
+                        "& .MuiSwitch-switchBase.Mui-checked": {
+                          color: "#7a1c2e",
+                        },
+                        "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track":
+                          { backgroundColor: "#7a1c2e" },
+                      }}
                     />
                   }
-                  label={<Typography sx={{ fontFamily: '"Lato", sans-serif' }}>{t('admin.featured')}</Typography>}
+                  label={
+                    <Typography sx={{ fontFamily: '"Lato", sans-serif' }}>
+                      {t("admin.featured")}
+                    </Typography>
+                  }
                 />
               </Grid>
 
               <Grid item xs={12}>
-                <Box sx={{ display: 'flex', gap: 2, justifyContent: 'flex-end' }}>
-                  <Button onClick={() => navigate('/admin/vendors')} sx={{ fontFamily: '"Lato", sans-serif', textTransform: 'none', color: '#555', borderRadius: 2 }}>
-                    {t('admin.cancel')}
+                <Box
+                  sx={{ display: "flex", gap: 2, justifyContent: "flex-end" }}
+                >
+                  <Button
+                    onClick={() => navigate("/admin/vendors")}
+                    sx={{
+                      fontFamily: '"Lato", sans-serif',
+                      textTransform: "none",
+                      color: "#555",
+                      borderRadius: 2,
+                    }}
+                  >
+                    {t("admin.cancel")}
                   </Button>
                   <Button
                     type="submit"
                     variant="contained"
                     disabled={saving}
-                    sx={{ backgroundColor: '#7a1c2e', fontFamily: '"Lato", sans-serif', textTransform: 'none', px: 4, borderRadius: 2, '&:hover': { backgroundColor: '#6a1826' } }}
+                    sx={{
+                      backgroundColor: "#7a1c2e",
+                      fontFamily: '"Lato", sans-serif',
+                      textTransform: "none",
+                      px: 4,
+                      borderRadius: 2,
+                      "&:hover": { backgroundColor: "#6a1826" },
+                    }}
                   >
-                    {saving ? <CircularProgress size={20} color="inherit" /> : t('admin.save')}
+                    {saving ? (
+                      <CircularProgress size={20} color="inherit" />
+                    ) : (
+                      t("admin.save")
+                    )}
                   </Button>
                 </Box>
               </Grid>

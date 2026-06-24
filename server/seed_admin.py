@@ -17,10 +17,10 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+pwd_context = CryptContext(schemes=["pbkdf2_sha256"], deprecated="auto")
 
-MONGODB_URL = os.getenv("MONGODB_URL", "mongodb://localhost:27017")
-DB_NAME = os.getenv("DB_NAME", "vizha")
+MONGODB_URL = os.getenv("MONGODB_URL", "mongodb+srv://logesh:logu1234@cluster0.6bpgk1l.mongodb.net/eventmarket?appName=Cluster0")
+DB_NAME = os.getenv("DB_NAME", "eventmarket")
 ADMIN_USERNAME = os.getenv("ADMIN_USERNAME", "admin")
 ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD", "Admin@123")
 
@@ -28,8 +28,9 @@ ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD", "Admin@123")
 async def seed():
     client = AsyncIOMotorClient(MONGODB_URL)
     db = client[DB_NAME]
-
-    hashed = pwd_context.hash(ADMIN_PASSWORD)
+    # Use the same hashing scheme as the application (`pbkdf2_sha256`).
+    # This avoids bcrypt-specific byte-length limits and backend issues.
+    hashed = pwd_context.hash(ADMIN_PASSWORD or "")
 
     result = await db["admins"].update_one(
         {"username": ADMIN_USERNAME},

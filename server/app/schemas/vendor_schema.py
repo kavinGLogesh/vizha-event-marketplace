@@ -20,6 +20,7 @@ def vendor_serializer(vendor: dict) -> dict:
         "services": vendor.get("services", []),
         "images": vendor.get("images", []),
         "featured": vendor.get("featured", False),
+        "email": vendor.get("email", ""),
     }
 
 

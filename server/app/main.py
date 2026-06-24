@@ -1,18 +1,26 @@
 # main.py — FastAPI application entry point
 import os
-from fastapi import FastAPI, UploadFile, File, Depends, HTTPException
+from pathlib import Path
+from fastapi import FastAPI, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from dotenv import load_dotenv
 
 from app.config.db import connect_db, close_db, get_db
-from app.config.cloudinary import configure_cloudinary
 from app.utils.password_hash import hash_password
 from app.middleware.auth_middleware import get_current_admin
+from app.config.cloudinary import configure_cloudinary
 
 from app.routes.vendor_routes import router as vendor_router
 from app.routes.category_routes import router as category_router
 from app.routes.district_routes import router as district_router
 from app.routes.admin_routes import router as admin_router
+from app.routes.upload_routes import router as upload_router
+from app.routes.email_routes import router as email_router
+
+BASE_DIR = Path(__file__).resolve().parent.parent
+UPLOAD_DIR = BASE_DIR / "uploads"
+UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
 
 load_dotenv()
 
@@ -41,6 +49,7 @@ app.add_middleware(
 @app.on_event("startup")
 async def startup():
     await connect_db()
+    # Configure Cloudinary (prints warning if credentials missing)
     configure_cloudinary()
     await seed_initial_data()
 
@@ -223,23 +232,11 @@ app.include_router(admin_router)
 app.include_router(vendor_router)
 app.include_router(category_router)
 app.include_router(district_router)
+app.include_router(upload_router)
+app.include_router(email_router)
 
-
-# ── Image Upload Route (global) ───────────────────────────────
-@app.post("/upload", tags=["Upload"])
-async def upload_image(
-    file: UploadFile = File(...),
-    admin=Depends(get_current_admin)
-):
-    """Upload an image to Cloudinary. Returns hosted URL. Admin only."""
-    allowed = ["image/jpeg", "image/png", "image/webp", "image/jpg"]
-    if file.content_type not in allowed:
-        raise HTTPException(status_code=400, detail=f"Unsupported file type: {file.content_type}")
-
-    from app.config.cloudinary import upload_image_to_cloudinary
-    contents = await file.read()
-    result = upload_image_to_cloudinary(contents)
-    return {"url": result["url"], "public_id": result["public_id"]}
+# ── Static uploads ─────────────────────────────────────────────────
+app.mount("/uploads", StaticFiles(directory=str(UPLOAD_DIR)), name="uploads")
 
 
 # ── Health Check ──────────────────────────────────────────────
