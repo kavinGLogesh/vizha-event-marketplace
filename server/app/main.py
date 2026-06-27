@@ -9,7 +9,7 @@ from dotenv import load_dotenv
 from app.config.db import connect_db, close_db, get_db
 from app.utils.password_hash import hash_password
 from app.middleware.auth_middleware import get_current_admin
-from app.config.cloudinary import configure_cloudinary
+
 
 from app.routes.vendor_routes import router as vendor_router
 from app.routes.category_routes import router as category_router
@@ -50,7 +50,7 @@ app.add_middleware(
 async def startup():
     await connect_db()
     # Configure Cloudinary (prints warning if credentials missing)
-    configure_cloudinary()
+    
     await seed_initial_data()
 
 
