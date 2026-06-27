@@ -350,7 +350,8 @@ server {
 2. New → Web Service → select `server/` as root directory
 3. Build command: `pip install -r requirements.txt`
 4. Start command: `uvicorn app.main:app --host 0.0.0.0 --port $PORT`
-5. Add all environment variables from `.env`
+5. Add all environment variables from `.env` (including `RESEND_API_KEY`, `MAIL_FROM`, etc.)
+6. Python version is pinned via `server/.python-version` (3.12) — do not use 3.14 on Render
 
 **Frontend on Vercel/Netlify:**
 1. Connect GitHub repo
