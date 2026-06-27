@@ -2,7 +2,7 @@ from bson import ObjectId
 from fastapi import APIRouter, HTTPException, status
 from pydantic import BaseModel, EmailStr, Field
 from app.config.db import get_db
-from app.utils.email_sender import send_email_via_brevo
+from app.utils.email_sender import send_email
 
 router = APIRouter(tags=['Email'])
 
@@ -46,7 +46,7 @@ async def send_vendor_email(request: EmailRequest):
         f'Reply to: {request.from_email}'
     )
 
-    result = await send_email_via_brevo(
+    result = await send_email(
         recipient_email=vendor['email'],
         recipient_name=vendor.get('shop_name', ''),
         reply_to_email=request.from_email,
@@ -57,5 +57,5 @@ async def send_vendor_email(request: EmailRequest):
 
     return {
         'message': 'Email sent successfully.',
-        'brevo_response': result
+        'email_response': result
     }

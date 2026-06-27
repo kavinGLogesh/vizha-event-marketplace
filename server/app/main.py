@@ -22,7 +22,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 UPLOAD_DIR = BASE_DIR / "uploads"
 UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
 
-load_dotenv()
+load_dotenv(BASE_DIR / ".env")
 
 # ── FastAPI App ───────────────────────────────────────────────
 app = FastAPI(

@@ -1,13 +1,45 @@
 import os
+import ssl
+
+import certifi
 import httpx
 from fastapi import HTTPException, status
 
 
-def _clean_env_value(value: str) -> str:
+def _clean_env_value(value: str | None) -> str:
+    if not value:
+        return ''
     return value.strip().strip('"').strip(',').strip()
 
 
-async def send_email_via_brevo(
+def _ssl_contexts() -> list[ssl.SSLContext]:
+    return [
+        ssl.create_default_context(),
+        ssl.create_default_context(cafile=certifi.where()),
+    ]
+
+
+async def _post_to_resend(payload: dict, headers: dict) -> httpx.Response:
+    last_error: Exception | None = None
+
+    for ssl_context in _ssl_contexts():
+        try:
+            async with httpx.AsyncClient(timeout=15, verify=ssl_context) as client:
+                return await client.post(
+                    'https://api.resend.com/emails',
+                    json=payload,
+                    headers=headers,
+                )
+        except httpx.ConnectError as exc:
+            last_error = exc
+
+    raise HTTPException(
+        status_code=status.HTTP_502_BAD_GATEWAY,
+        detail=f'Unable to reach Resend: {last_error}'
+    ) from last_error
+
+
+async def send_email(
     recipient_email: str,
     recipient_name: str,
     reply_to_email: str,
@@ -15,51 +47,56 @@ async def send_email_via_brevo(
     html_content: str,
     text_content: str
 ) -> dict:
-    api_key = os.getenv('BREVO_API_KEY')
-    if api_key:
-        api_key = _clean_env_value(api_key)
+    api_key = _clean_env_value(os.getenv('RESEND_API_KEY'))
+    sender_email = _clean_env_value(os.getenv('MAIL_FROM'))
+    sender_name = _clean_env_value(os.getenv('MAIL_FROM_NAME') or 'Vizha') or 'Vizha'
 
     if not api_key:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail='Brevo API key is not configured. Set a valid BREVO_API_KEY in .env, not the SMTP password.'
+            detail='RESEND_API_KEY is not configured in server/.env'
         )
 
-    sender_email = _clean_env_value(os.getenv('MAIL_FROM', ''))
-    sender_name = _clean_env_value(os.getenv('MAIL_FROM_NAME') or os.getenv('MAIL_USERNAME', 'Vizha')) or 'Vizha'
     if not sender_email:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail='Mail sender email is not configured.'
+            detail='MAIL_FROM is not configured in server/.env'
         )
 
     payload = {
-        'sender': {'name': sender_name, 'email': sender_email},
-        'to': [{'email': recipient_email, 'name': recipient_name or recipient_email}],
-        'replyTo': {'email': reply_to_email},
+        'from': f'{sender_name} <{sender_email}>',
+        'to': [recipient_email],
+        'reply_to': reply_to_email,
         'subject': subject,
-        'htmlContent': html_content,
-        'textContent': text_content
+        'html': html_content,
+        'text': text_content,
     }
 
     headers = {
-        'api-key': api_key,
-        'Content-Type': 'application/json'
+        'Authorization': f'Bearer {api_key}',
+        'Content-Type': 'application/json',
     }
 
-    async with httpx.AsyncClient(timeout=15) as client:
-        response = await client.post('https://api.brevo.com/v3/smtp/email', json=payload, headers=headers)
+    response = await _post_to_resend(payload, headers)
 
     if response.status_code == 401:
         raise HTTPException(
             status_code=status.HTTP_502_BAD_GATEWAY,
-            detail='Brevo email service error: 401 Unauthorized. Check that BREVO_API_KEY is a valid Brevo API key and not the SMTP password.'
+            detail=(
+                'Resend rejected the API key (401). '
+                'Get a key from resend.com → API Keys (starts with re_) and set RESEND_API_KEY in server/.env.'
+            )
         )
 
     if response.status_code >= 300:
         raise HTTPException(
             status_code=status.HTTP_502_BAD_GATEWAY,
-            detail=f'Brevo email service error: {response.status_code} {response.text}'
+            detail=f'Resend error: {response.status_code} {response.text}'
         )
 
-    return response.json()
+    result = response.json()
+    return {
+        'provider': 'resend',
+        'id': result.get('id'),
+        'to': recipient_email,
+    }
