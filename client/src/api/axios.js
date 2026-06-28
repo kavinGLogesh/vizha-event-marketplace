@@ -2,7 +2,7 @@
 import axios from "axios";
 
 const API = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || "http://localhost:8000",
+  baseURL: import.meta.env.VITE_API_URL || "https://vizhaeventmarketplaceback.onrender.com",
   timeout: 15000,
   headers: {
     "Content-Type": "application/json",
