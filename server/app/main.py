@@ -34,12 +34,20 @@ app = FastAPI(
 )
 
 # ── CORS Middleware ───────────────────────────────────────────
-raw_origins = os.getenv("CORS_ORIGINS", "http://localhost:3000")
-allowed_origins = [o.strip() for o in raw_origins.split(",")]
+raw_origins = os.getenv(
+    "CORS_ORIGINS",
+    "http://localhost:3000,https://vizhamarket.netlify.app",
+)
+allowed_origins = [
+    origin.strip().rstrip("/")
+    for origin in raw_origins.split(",")
+    if origin.strip()
+]
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=allowed_origins,
+    allow_origin_regex=r"https://.*\.netlify\.app",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

@@ -352,13 +352,21 @@ server {
 4. Start command: `uvicorn app.main:app --host 0.0.0.0 --port $PORT`
 5. Add all environment variables from `.env` (including `RESEND_API_KEY`, `MAIL_FROM`, etc.)
 6. Python version is pinned via `server/.python-version` (3.12) — do not use 3.14 on Render
+7. **Required for Netlify frontend** — set on Render:
+   ```
+   CORS_ORIGINS=http://localhost:3000,https://vizhamarket.netlify.app
+   ```
 
-**Frontend on Vercel/Netlify:**
+**Frontend on Netlify:**
 1. Connect GitHub repo
 2. Root directory: `client/`
 3. Build command: `npm run build`
 4. Output directory: `dist`
-5. Add environment variable: `VITE_API_URL=https://your-render-api.onrender.com`
+5. Add environment variable:
+   ```
+   VITE_API_URL=https://vizhaeventmarketplaceback.onrender.com
+   ```
+6. Redeploy after changing env vars (Netlify rebuilds are required for `VITE_*` vars)
 
 ---
 
@@ -377,7 +385,7 @@ server {
 | `CLOUDINARY_API_SECRET`| Cloudinary API secret               | `abc-xyz...`                     |
 | `ADMIN_USERNAME`       | Admin login username                | `admin`                          |
 | `ADMIN_PASSWORD`       | Admin login password                | `Admin@123`                      |
-| `CORS_ORIGINS`         | Allowed frontend origins            | `http://localhost:3000`          |
+| `CORS_ORIGINS`         | Allowed frontend origins (comma-separated) | `http://localhost:3000,https://vizhamarket.netlify.app` |
 
 ### Client (`client/.env`)
 | Variable        | Description          | Example                          |
