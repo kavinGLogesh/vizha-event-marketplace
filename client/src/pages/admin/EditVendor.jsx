@@ -37,6 +37,7 @@ import {
   updateVendor,
   uploadImage,
 } from "../../api/axios";
+import { getImageUrl } from "../../utils/image";
 
 const LANGUAGES = [
   "Tamil",
@@ -630,7 +631,7 @@ const EditVendor = () => {
                       <Box key={i} sx={{ position: "relative" }}>
                         <Box
                           component="img"
-                          src={url}
+                          src={getImageUrl(url)}
                           sx={{
                             width: 80,
                             height: 60,

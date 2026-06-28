@@ -13,6 +13,8 @@ import LocationOnIcon from '@mui/icons-material/LocationOn';
 import CategoryIcon from '@mui/icons-material/Category';
 import CurrencyRupeeIcon from '@mui/icons-material/CurrencyRupee';
 
+import { getImageUrl } from '../utils/image';
+
 const PLACEHOLDER = 'https://via.placeholder.com/400x250/f5e8e8/7a1c2e?text=No+Image';
 
 const VendorCard = ({ vendor }) => {
@@ -32,7 +34,7 @@ const VendorCard = ({ vendor }) => {
     featured
   } = vendor;
 
-  const imageUrl = images.length > 0 ? images[0] : PLACEHOLDER;
+  const imageUrl = getImageUrl(images.length > 0 ? images[0] : null, PLACEHOLDER);
 
   const handleCall = (e) => {
     e.stopPropagation();

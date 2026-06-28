@@ -26,6 +26,7 @@ import WorkHistoryIcon from "@mui/icons-material/WorkHistory";
 import TranslateIcon from "@mui/icons-material/Translate";
 import CurrencyRupeeIcon from "@mui/icons-material/CurrencyRupee";
 import { getVendorById, sendVendorEmail } from "../api/axios";
+import { getImageUrl } from "../utils/image";
 
 const PLACEHOLDER =
   "https://via.placeholder.com/800x400/f5e8e8/7a1c2e?text=No+Image";
@@ -200,7 +201,7 @@ const VendorDetails = () => {
     );
   }
 
-  const images = vendor.images?.length > 0 ? vendor.images : [PLACEHOLDER];
+  const images = vendor.images?.length > 0 ? vendor.images.map(img => getImageUrl(img, PLACEHOLDER)) : [PLACEHOLDER];
 
   return (
     <Box>

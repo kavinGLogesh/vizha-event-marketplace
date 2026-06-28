@@ -36,6 +36,7 @@ import {
   createVendor,
   uploadImage,
 } from "../../api/axios";
+import { getImageUrl } from "../../utils/image";
 
 const LANGUAGES = [
   "Tamil",
@@ -591,7 +592,7 @@ const AddVendor = () => {
                       <Box
                         key={i}
                         component="img"
-                        src={url}
+                        src={getImageUrl(url)}
                         sx={{
                           width: 80,
                           height: 60,
